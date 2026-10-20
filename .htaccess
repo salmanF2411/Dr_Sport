@@ -1,0 +1,5 @@
+Options -Indexes
+
+<FilesMatch "^(README\.md|PRD_DRSPORT\.md|setup_admin\.php)$">
+    Require all denied
+</FilesMatch>
