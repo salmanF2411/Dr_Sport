@@ -85,7 +85,6 @@ require_once __DIR__ . '/../../includes/header.php';
             <input type="checkbox" name="inactive" value="1" <?= (($_GET['inactive'] ?? '') === '1' ? ' checked' : '') ?>>
             Nonaktif
         </label>
-        <button class="button secondary">Filter</button>
     </form>
     <a class="button secondary" href="<?= e(url('admin/inventory/storage-locations.php')) ?>"
         title="Lihat master rak gudang">

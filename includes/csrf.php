@@ -33,11 +33,11 @@ function verify_csrf(): void
     }
     $token = isset($_POST['csrf_token']) ? (string) $_POST['csrf_token'] : '';
     if (!$token || !hash_equals(csrf_token(), $token)) {
-        http_response_code(419);
+        http_response_code(403);
         if (function_exists('render_error')) {
-            render_error(419, 'Sesi formulir sudah kedaluwarsa. Muat ulang halaman dan coba kembali.');
+            render_error(403, 'Sesi formulir sudah kedaluwarsa atau token CSRF tidak valid. Muat ulang halaman dan coba kembali.');
         } else {
-            echo 'Sesi formulir sudah kedaluwarsa. Muat ulang halaman dan coba kembali.';
+            echo '403 Akses Ditolak: Sesi formulir sudah kedaluwarsa atau token CSRF tidak valid.';
         }
         exit;
     }

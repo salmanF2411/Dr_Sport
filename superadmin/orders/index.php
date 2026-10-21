@@ -79,7 +79,6 @@ require_once __DIR__ . '/../../includes/header.php';
                 <option value="<?= e($val) ?>" <?= ($status === $val ? ' selected' : '') ?>><?= e($val) ?></option>
             <?php endforeach; ?>
         </select>
-        <button class="button secondary">Filter</button>
     </form>
 </div>
 

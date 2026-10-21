@@ -81,7 +81,6 @@ require_once __DIR__ . '/../../includes/header.php';
                 <option value="<?= e($val) ?>" <?= ($orderStatus === $val ? ' selected' : '') ?>><?= e($val) ?></option>
             <?php endforeach; ?>
         </select>
-        <button class="button secondary">Tampilkan</button>
     </form>
     <button class="button primary no-print" onclick="window.print()">Cetak laporan</button>
 </div>

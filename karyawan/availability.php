@@ -41,7 +41,6 @@ require_once __DIR__ . '/../includes/header.php';
                 </option>
             <?php endforeach; ?>
         </select>
-        <button class="button secondary">Cari bahan</button>
     </form>
 </div>
 

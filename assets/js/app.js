@@ -131,6 +131,31 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Auto-filter real-time tanpa tombol filter atau terapkan
+    document.querySelectorAll('.filter-form').forEach(function (form) {
+        var debounceTimer = null;
+
+        // Auto-submit saat select, input tanggal, atau checkbox berubah
+        form.querySelectorAll('select, input[type="date"], input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                form.submit();
+            });
+        });
+
+        // Auto-submit saat kolom pencarian diketik (debounce 450ms) atau dihapus
+        form.querySelectorAll('input[type="search"], input[name="q"]').forEach(function (searchInput) {
+            searchInput.addEventListener('input', function () {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function () {
+                    form.submit();
+                }, 450);
+            });
+            searchInput.addEventListener('search', function () {
+                form.submit();
+            });
+        });
+    });
+
     function escapeHtml(str) {
         if (!str) return '';
         var div = document.createElement('div');

@@ -49,7 +49,6 @@ require_once __DIR__ . '/../../includes/header.php';
             <span>Sampai</span>
             <input type="date" name="end" value="<?= e($end) ?>">
         </label>
-        <button class="button secondary">Terapkan</button>
         <?php if ($materialId > 0): ?>
             <a href="<?= e(url('superadmin/inventory/history.php')) ?>" class="button small subtle">Reset filter bahan</a>
         <?php endif; ?>
