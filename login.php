@@ -27,7 +27,7 @@ $actionUrl = base_url('actions/user-actions.php');
     <div class="login-decoration"></div>
     <main class="login-wrap">
         <a class="brand login-brand" href="<?= e($brandUrl) ?>">
-            <span class="brand-mark">DS</span>
+            <img class="brand-logo" src="<?= e(base_url('assets/images/logo.jpg')) ?>" alt="DR.SPORT">
             <span>
                 <strong>DR.SPORT</strong>
                 <small>OPERATIONS CONSOLE</small>

@@ -485,6 +485,7 @@ function record_inventory(PDO $pdo, int $materialId, string $type, float $quanti
 function render_error(int $code, string $message): void
 {
     $cssUrl = base_url('assets/css/app.css');
+    $logoUrl = base_url('assets/images/logo.jpg');
     $homeUrl = base_url();
-    echo '<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . $code . ' · DR.SPORT</title><link rel="stylesheet" href="' . e($cssUrl) . '"></head><body><main class="error-page"><div class="brand-mark">DS</div><p class="eyebrow">DR.SPORT · INVENTORY CONSOLE</p><h1>' . $code . '</h1><p>' . e($message) . '</p><a class="button primary" href="' . e($homeUrl) . '">Kembali ke aplikasi</a></main></body></html>';
+    echo '<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . $code . ' · DR.SPORT</title><link rel="stylesheet" href="' . e($cssUrl) . '"></head><body><main class="error-page"><img class="brand-logo error-logo" src="' . e($logoUrl) . '" alt="DR.SPORT"><p class="eyebrow">DR.SPORT · INVENTORY CONSOLE</p><h1>' . $code . '</h1><p>' . e($message) . '</p><a class="button primary" href="' . e($homeUrl) . '">Kembali ke aplikasi</a></main></body></html>';
 }

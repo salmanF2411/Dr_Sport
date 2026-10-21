@@ -48,7 +48,7 @@ $dashboardUrl = url('dashboard');
 ?>
 <aside class="sidebar">
     <a class="brand" href="<?= e($dashboardUrl) ?>">
-        <span class="brand-mark">DS</span>
+        <img class="brand-logo" src="<?= e(base_url('assets/images/logo.jpg')) ?>" alt="DR.SPORT">
         <span>
             <strong>DR.SPORT</strong>
             <small>OPERATIONS CONSOLE</small>

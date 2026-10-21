@@ -6,7 +6,7 @@ require_once __DIR__ . '/csrf.php';
 ?>
 <header class="topbar">
     <div class="mobile-brand">
-        <span class="brand-mark">DS</span> DR.SPORT
+        <img class="brand-logo" src="<?= e(base_url('assets/images/logo.jpg')) ?>" alt="DR.SPORT"> DR.SPORT
     </div>
     <div class="topbar-meta">
         <span class="today-label"><?= e(indonesian_date('l, d F Y')) ?></span>
