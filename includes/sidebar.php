@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/csrf.php';
 
 $currentUser = $user ?? current_user() ?? [
     'name' => 'Pengguna',
@@ -67,9 +68,14 @@ $dashboardUrl = url('dashboard');
         <?php endforeach; ?>
     </nav>
     <div class="sidebar-bottom">
-        <div class="sidebar-note">
-            <span class="live-dot"></span> Inventory terhubung
-        </div>
+        <form method="post" action="<?= e(base_url('actions/user-actions.php')) ?>" class="sidebar-logout-form">
+            <?= csrf_field() ?>
+            <input type="hidden" name="action" value="logout">
+            <button type="submit" class="sidebar-logout-btn" title="Logout dari sistem">
+                <span class="logout-icon" aria-hidden="true">↪</span>
+                <span class="logout-text">Logout</span>
+            </button>
+        </form>
         <div class="side-user">
             <span class="avatar"><?= e(strtoupper(substr($currentUser['name'], 0, 1))) ?></span>
             <span>

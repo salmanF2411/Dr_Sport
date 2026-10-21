@@ -41,6 +41,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .nav-link.active { color: #fff; background: #263652; font-weight: 600; box-shadow: inset 2px 0 #6c9deb; }
 .nav-icon { width: 18px; color: #9fb1cb; font-size: 17px; line-height: 1; text-align: center; }
 .sidebar-bottom { margin-top: auto; }
+.sidebar-logout-form { display: block; margin: 0 4px 14px; }
+.sidebar-logout-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 9px 12px; border: 1px solid #303d54; border-radius: 8px; background: rgba(255, 255, 255, 0.04); color: #c2cde0; font: 600 12px/1 Manrope, sans-serif; cursor: pointer; transition: all 0.18s ease; }
+.sidebar-logout-btn:hover { background: rgba(239, 68, 68, 0.14); border-color: rgba(239, 68, 68, 0.45); color: #ff9da4; }
+.sidebar-logout-btn .logout-icon { font-size: 14px; line-height: 1; transition: transform 0.18s ease; }
+.sidebar-logout-btn:hover .logout-icon { transform: translateX(2px); }
 .sidebar-note { display: flex; align-items: center; gap: 9px; margin: 0 7px 15px; padding: 10px; border: 1px solid #303d54; border-radius: 7px; color: #b6c2d4; font-size: 11px; }
 .live-dot { display: inline-block; width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: #42ae78; box-shadow: 0 0 0 3px rgba(66,174,120,.13); }
 .side-user { display: flex; align-items: center; gap: 10px; padding: 14px 8px 2px; border-top: 1px solid #303d54; }
@@ -265,6 +270,10 @@ select:focus, input:focus, textarea:focus { border-color: #6e97d1; box-shadow: 0
     .nav-link { min-height: 43px; justify-content: center; padding: 0; font-size: 0 !important; }
     .nav-icon { font-size: 18px; }
     .sidebar-bottom { width: 100%; }
+    .sidebar-logout-form { margin: 0 0 10px; width: 100%; display: flex; justify-content: center; }
+    .sidebar-logout-btn { width: 40px; height: 40px; padding: 0; border-radius: 8px; }
+    .sidebar-logout-btn .logout-text { display: none; }
+    .sidebar-logout-btn .logout-icon { font-size: 16px; margin: 0; }
     .sidebar-note { justify-content: center; margin: 0 0 12px; padding: 10px 0; font-size: 0; }
     .side-user { justify-content: center; padding: 12px 0 0; }
     .side-user > span:not(.avatar) { display: none; }

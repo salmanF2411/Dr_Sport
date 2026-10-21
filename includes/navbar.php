@@ -11,10 +11,5 @@ require_once __DIR__ . '/csrf.php';
     <div class="topbar-meta">
         <span class="today-label"><?= e(indonesian_date('l, d F Y')) ?></span>
         <a class="profile-link" href="<?= e(url('profile.php')) ?>">Profil & keamanan</a>
-        <form method="post" action="<?= e(base_url('actions/user-actions.php')) ?>" class="inline-form">
-            <?= csrf_field() ?>
-            <input type="hidden" name="action" value="logout">
-            <button class="logout-link">Keluar ↗</button>
-        </form>
     </div>
 </header>
