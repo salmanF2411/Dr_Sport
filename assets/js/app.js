@@ -57,4 +57,84 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    var modal = document.getElementById('history-detail-modal');
+    if (modal) {
+        document.querySelectorAll('[data-open-mutation-modal]').forEach(function (button) {
+            button.addEventListener('click', function (e) {
+                if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+                e.preventDefault();
+
+                var title = document.getElementById('hdm-title');
+                var eyebrow = document.getElementById('hdm-eyebrow');
+                var body = document.getElementById('hdm-body');
+                var fullLink = document.getElementById('hdm-full-link');
+
+                var code = button.getAttribute('data-trx-code') || '—';
+                var typeLabel = button.getAttribute('data-trx-type-label') || '';
+                var date = button.getAttribute('data-trx-date') || '';
+                var matName = button.getAttribute('data-material-name') || '';
+                var matCode = button.getAttribute('data-material-code') || '';
+                var qty = button.getAttribute('data-quantity') || '';
+                var qtyClass = button.getAttribute('data-quantity-class') || 'in';
+                var before = button.getAttribute('data-before') || '—';
+                var after = button.getAttribute('data-after') || '—';
+                var reason = button.getAttribute('data-reason') || '—';
+                var notes = button.getAttribute('data-notes') || '—';
+                var order = button.getAttribute('data-order') || '—';
+                var actor = button.getAttribute('data-actor') || '—';
+                var detailUrl = button.getAttribute('data-detail-url') || button.href;
+
+                if (title) title.textContent = code;
+                if (eyebrow) eyebrow.textContent = 'DETAIL MUTASI · ' + typeLabel.toUpperCase();
+                if (fullLink) fullLink.href = detailUrl;
+
+                if (body) {
+                    body.innerHTML = 
+                        '<div class="mutation-flow">' +
+                            '<div class="flow-step"><small>Sebelum</small><strong>' + escapeHtml(before) + '</strong></div>' +
+                            '<div class="flow-arrow">→</div>' +
+                            '<div class="flow-delta ' + (qtyClass === 'in' ? 'in' : 'out') + '"><small>' + escapeHtml(typeLabel) + '</small>' + escapeHtml(qty) + '</div>' +
+                            '<div class="flow-arrow">→</div>' +
+                            '<div class="flow-step"><small>Sesudah</small><strong>' + escapeHtml(after) + '</strong></div>' +
+                        '</div>' +
+                        '<div class="detail-grid">' +
+                            '<div class="detail-box full"><small>Bahan</small><strong>' + escapeHtml(matName) + ' (' + escapeHtml(matCode) + ')</strong></div>' +
+                            '<div class="detail-box"><small>Waktu Transaksi</small><strong>' + escapeHtml(date) + '</strong></div>' +
+                            '<div class="detail-box"><small>Dicatat Oleh</small><strong>' + escapeHtml(actor) + '</strong></div>' +
+                            '<div class="detail-box full"><small>Keperluan / Alasan</small><strong>' + escapeHtml(reason) + '</strong></div>' +
+                            '<div class="detail-box"><small>Pesanan Terkait</small><strong>' + escapeHtml(order) + '</strong></div>' +
+                            '<div class="detail-box"><small>Catatan</small><strong>' + escapeHtml(notes) + '</strong></div>' +
+                        '</div>';
+                }
+
+                if (typeof modal.showModal === 'function') {
+                    modal.showModal();
+                } else {
+                    modal.setAttribute('open', '');
+                }
+            });
+        });
+
+        modal.querySelectorAll('[data-close-modal]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                if (typeof modal.close === 'function') modal.close();
+                else modal.removeAttribute('open');
+            });
+        });
+
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                if (typeof modal.close === 'function') modal.close();
+                else modal.removeAttribute('open');
+            }
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
 });
