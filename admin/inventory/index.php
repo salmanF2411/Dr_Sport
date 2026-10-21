@@ -61,28 +61,28 @@ require_once __DIR__ . '/../../includes/header.php';
     <form class="filter-form" method="get" action="<?= e(url('admin/inventory/index.php')) ?>">
         <label class="search-box">
             <span>⌕</span>
-            <input type="search" name="q" value="<?= e($search) ?>" placeholder="Cari nama atau kode bahan">
+            <input type="search" name="q" value="<?= e($search) ?>" placeholder="Cari nama atau kode bahan" onsearch="this.form.submit()">
         </label>
-        <select name="category">
+        <select name="category" onchange="this.form.submit()">
             <option value="">Semua kategori</option>
             <?php foreach (['kain', 'tinta_printing', 'benang'] as $val): ?>
                 <option value="<?= e($val) ?>" <?= ($category === $val ? ' selected' : '') ?>><?= e(category_label($val)) ?>
                 </option>
             <?php endforeach; ?>
         </select>
-        <select name="location">
+        <select name="location" onchange="this.form.submit()">
             <option value="">Semua rak / lokasi</option>
             <?php foreach ($allLocations as $loc): ?>
                 <option value="<?= e($loc) ?>" <?= ($locationFilter === $loc ? ' selected' : '') ?>><?= e($loc) ?></option>
             <?php endforeach; ?>
         </select>
-        <select name="state">
+        <select name="state" onchange="this.form.submit()">
             <option value="">Semua status</option>
             <option value="low" <?= ($state === 'low' ? ' selected' : '') ?>>Menipis</option>
             <option value="empty" <?= ($state === 'empty' ? ' selected' : '') ?>>Habis</option>
         </select>
         <label class="check-filter">
-            <input type="checkbox" name="inactive" value="1" <?= (($_GET['inactive'] ?? '') === '1' ? ' checked' : '') ?>>
+            <input type="checkbox" name="inactive" value="1" <?= (($_GET['inactive'] ?? '') === '1' ? ' checked' : '') ?> onchange="this.form.submit()">
             Nonaktif
         </label>
     </form>

@@ -32,9 +32,9 @@ require_once __DIR__ . '/../includes/header.php';
     <form method="get" action="<?= e(url('karyawan/availability.php')) ?>" class="filter-form">
         <label class="search-box">
             <span>⌕</span>
-            <input type="search" name="q" value="<?= e($search) ?>" placeholder="Cari nama atau kode bahan">
+            <input type="search" name="q" value="<?= e($search) ?>" placeholder="Cari nama atau kode bahan" onsearch="this.form.submit()">
         </label>
-        <select name="category">
+        <select name="category" onchange="this.form.submit()">
             <option value="">Semua kategori</option>
             <?php foreach (['kain', 'tinta_printing', 'benang'] as $val): ?>
                 <option value="<?= e($val) ?>" <?= ($category === $val ? ' selected' : '') ?>><?= e(category_label($val)) ?>

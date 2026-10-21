@@ -65,17 +65,17 @@ require_once __DIR__ . '/../../includes/header.php';
     <form method="get" action="<?= e(url('superadmin/reports/index.php')) ?>" class="filter-form">
         <label class="field-inline">
             <span>Dari</span>
-            <input type="date" name="start" value="<?= e($start) ?>">
+            <input type="date" name="start" value="<?= e($start) ?>" onchange="if(!this.value||this.value.length===10)this.form.submit()">
         </label>
         <label class="field-inline">
             <span>Sampai</span>
-            <input type="date" name="end" value="<?= e($end) ?>">
+            <input type="date" name="end" value="<?= e($end) ?>" onchange="if(!this.value||this.value.length===10)this.form.submit()">
         </label>
         <label class="search-box">
             <span>⌕</span>
-            <input type="search" name="q" value="<?= e($orderSearch) ?>" placeholder="Kode pesanan / pelanggan">
+            <input type="search" name="q" value="<?= e($orderSearch) ?>" placeholder="Kode pesanan / pelanggan" onsearch="this.form.submit()">
         </label>
-        <select name="status">
+        <select name="status" onchange="this.form.submit()">
             <option value="">Semua status</option>
             <?php foreach ($allowedStatuses as $val): ?>
                 <option value="<?= e($val) ?>" <?= ($orderStatus === $val ? ' selected' : '') ?>><?= e($val) ?></option>

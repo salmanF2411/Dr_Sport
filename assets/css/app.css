@@ -112,6 +112,7 @@ td small.block { display: block; margin-top: 3px; }
 .low-stock { color: var(--warning); font-size: 10px; font-weight: 700; white-space: nowrap; }
 .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
 .filter-form { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; }
+.filter-form.is-submitting { opacity: 0.55; pointer-events: none; cursor: wait; }
 .search-box { display: flex; width: 265px; height: 37px; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid #dce2ea; border-radius: 6px; color: #8a96a7; background: white; }
 .search-box > span { font-size: 19px; line-height: 1; }
 .search-box input { width: 100%; padding: 0; border: 0; outline: 0; color: var(--text); background: transparent; font-size: 11px; }

@@ -43,11 +43,11 @@ require_once __DIR__ . '/../../includes/header.php';
         <?php endif; ?>
         <label class="field-inline">
             <span>Dari</span>
-            <input type="date" name="start" value="<?= e($start) ?>">
+            <input type="date" name="start" value="<?= e($start) ?>" onchange="if(!this.value||this.value.length===10)this.form.submit()">
         </label>
         <label class="field-inline">
             <span>Sampai</span>
-            <input type="date" name="end" value="<?= e($end) ?>">
+            <input type="date" name="end" value="<?= e($end) ?>" onchange="if(!this.value||this.value.length===10)this.form.submit()">
         </label>
         <?php if ($materialId > 0): ?>
             <a href="<?= e(url('superadmin/inventory/history.php')) ?>" class="button small subtle">Reset filter bahan</a>

@@ -69,6 +69,6 @@ $actionUrl = base_url('actions/user-actions.php');
             © <?= date('Y') ?> DR.SPORT · Sistem informasi operasional
         </footer>
     </main>
-    <script src="<?= e(base_url('assets/js/app.js')) ?>"></script>
+    <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= filemtime(__DIR__ . '/assets/js/app.js') ?>"></script>
 </body>
 </html>

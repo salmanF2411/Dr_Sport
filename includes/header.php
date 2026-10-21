@@ -28,7 +28,7 @@ $userRoleLabel = $roleLabels[$user['role']] ?? $user['role'];
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#172033">
     <title><?= e($title) ?> · DR.SPORT</title>
-    <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>">
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= filemtime(__DIR__ . '/../assets/css/app.css') ?>">
 </head>
 <body>
 <div class="app-shell">

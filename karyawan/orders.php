@@ -44,9 +44,9 @@ require_once __DIR__ . '/../includes/header.php';
     <form class="filter-form" method="get" action="<?= e(url('karyawan/orders.php')) ?>">
         <label class="search-box">
             <span>⌕</span>
-            <input type="search" name="q" value="<?= e($search) ?>" placeholder="Cari kode pesanan / deskripsi">
+            <input type="search" name="q" value="<?= e($search) ?>" placeholder="Cari kode pesanan / deskripsi" onsearch="this.form.submit()">
         </label>
-        <select name="status">
+        <select name="status" onchange="this.form.submit()">
             <option value="">Semua status aktif</option>
             <?php foreach ($statuses as $val): ?>
                 <option value="<?= e($val) ?>" <?= ($status === $val ? ' selected' : '') ?>><?= e($val) ?></option>
