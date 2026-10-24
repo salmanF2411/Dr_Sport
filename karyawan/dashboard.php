@@ -9,18 +9,20 @@ $pageTitle = 'Dashboard Karyawan';
 $activePage = 'karyawan_dashboard';
 
 $pdo = db();
+$userId = (int) $user['id'];
 $activeMaterials = (int) $pdo->query('SELECT COUNT(*) FROM materials WHERE is_active=1')->fetchColumn();
 $lowCount = (int) $pdo->query('SELECT COUNT(*) FROM materials WHERE is_active=1 AND current_stock<=minimum_stock')->fetchColumn();
 $orderCount = (int) $pdo->query("SELECT COUNT(*) FROM orders WHERE status NOT IN ('Selesai','Dibatalkan')")->fetchColumn();
+$myPendingRequests = (int) $pdo->query("SELECT COUNT(*) FROM material_requests WHERE user_id = {$userId} AND status='pending'")->fetchColumn();
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <div class="stat-grid">
     <?php
-    stat_card('Bahan aktif', (string) $activeMaterials, 'Siap untuk dicek & digunakan');
+    stat_card('Bahan aktif', (string) $activeMaterials, 'Siap untuk dicek & diajukan');
     stat_card('Perlu perhatian', (string) $lowCount, 'Stok menipis atau habis', 'warning');
     stat_card('Pesanan berjalan', (string) $orderCount, 'Status produksi workshop');
-    stat_card('Saldo stok', 'DB', 'Data real-time dari database');
+    stat_card('Pengajuan saya', (string) $myPendingRequests, 'Menunggu persetujuan Admin', $myPendingRequests > 0 ? 'warning' : '');
     ?>
 </div>
 

@@ -11,7 +11,7 @@ $activePage = 'admin_dashboard';
 $pdo = db();
 $newOrders = (int) $pdo->query("SELECT COUNT(*) FROM orders WHERE status='Pesanan Masuk'")->fetchColumn();
 $inProgressOrders = (int) $pdo->query("SELECT COUNT(*) FROM orders WHERE status NOT IN ('Pesanan Masuk','Selesai','Dibatalkan')")->fetchColumn();
-$completedOrders = (int) $pdo->query("SELECT COUNT(*) FROM orders WHERE status='Selesai'")->fetchColumn();
+$pendingRequests = (int) $pdo->query("SELECT COUNT(*) FROM material_requests WHERE status='pending'")->fetchColumn();
 $lowCount = (int) $pdo->query('SELECT COUNT(*) FROM materials WHERE is_active = 1 AND current_stock <= minimum_stock')->fetchColumn();
 
 require_once __DIR__ . '/../includes/header.php';
@@ -20,10 +20,80 @@ require_once __DIR__ . '/../includes/header.php';
     <?php
     stat_card('Pesanan masuk', (string) $newOrders, 'Menunggu proses');
     stat_card('Dalam proses', (string) $inProgressOrders, 'Sedang dikerjakan');
-    stat_card('Pesanan selesai', (string) $completedOrders, 'Seluruh periode');
+    stat_card('Pengajuan bahan', (string) $pendingRequests, 'Menunggu konfirmasi admin', $pendingRequests > 0 ? 'warning' : '');
     stat_card('Stok menipis', (string) $lowCount, 'Bahan menyentuh minimum', 'warning');
     ?>
 </div>
+
+<?php if ($pendingRequests > 0): ?>
+    <?php
+    $pendingItems = $pdo->query("
+        SELECT r.*, m.name AS material_name, m.material_code, m.unit, m.current_stock, u.name AS requester_name
+        FROM material_requests r
+        JOIN materials m ON m.id = r.material_id
+        JOIN users u ON u.id = r.user_id
+        WHERE r.status = 'pending'
+        ORDER BY r.created_at ASC
+        LIMIT 5
+    ")->fetchAll();
+    ?>
+    <section class="panel" style="margin-bottom: 19px; border-left: 4px solid var(--warning);">
+        <div class="panel-heading">
+            <div>
+                <h2 style="color: var(--warning);">✉ Pengajuan Bahan Menunggu Konfirmasi (<?= $pendingRequests ?>)</h2>
+                <p>Karyawan mengajukan kebutuhan bahan dan menunggu persetujuan Anda agar stok dapat dipotong.</p>
+            </div>
+            <a class="text-link" href="<?= e(url('admin/requests/index.php', ['status' => 'pending'])) ?>">Buka semua pengajuan →</a>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No. Pengajuan</th>
+                        <th>Pemohon</th>
+                        <th>Bahan</th>
+                        <th>Jumlah Diminta</th>
+                        <th>Saldo Tersedia</th>
+                        <th>Keperluan</th>
+                        <th class="text-right">Aksi Cepat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($pendingItems as $pi): ?>
+                        <?php $enough = ((float)$pi['current_stock'] >= (float)$pi['quantity']); ?>
+                        <tr>
+                            <td><strong><?= e($pi['request_code']) ?></strong></td>
+                            <td><?= e($pi['requester_name']) ?></td>
+                            <td><strong><?= e($pi['material_name']) ?></strong> <small class="muted">(<?= e($pi['material_code']) ?>)</small></td>
+                            <td><strong style="color:#1e293b;"><?= e(format_stock($pi['quantity'])) ?></strong> <?= e($pi['unit']) ?></td>
+                            <td>
+                                <strong><?= e(format_stock($pi['current_stock'])) ?></strong> <?= e($pi['unit']) ?>
+                                <?php if (!$enough): ?>
+                                    <small class="block text-danger">⚠ Stok kurang</small>
+                                <?php endif; ?>
+                            </td>
+                            <td><?= e($pi['reason']) ?></td>
+                            <td>
+                                <div class="row-actions" style="justify-content:flex-end;">
+                                    <?php if ($enough): ?>
+                                        <form method="post" action="<?= e(base_url('actions/inventory-actions.php')) ?>" class="inline-form" onsubmit="return confirm('Setujui pengajuan <?= e($pi['request_code']) ?> (<?= e($pi['material_name']) ?> <?= format_stock($pi['quantity']) ?> <?= e($pi['unit']) ?>)?\n\nStok akan langsung dikurangi.');">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="action" value="approve_material_request">
+                                            <input type="hidden" name="request_id" value="<?= e($pi['id']) ?>">
+                                            <input type="hidden" name="redirect_to" value="<?= e($_SERVER['REQUEST_URI']) ?>">
+                                            <button type="submit" class="button small primary" title="Setujui dan potong stok">✓ Setujui</button>
+                                        </form>
+                                    <?php endif; ?>
+                                    <a href="<?= e(url('admin/requests/index.php')) ?>" class="button small secondary">Review ↗</a>
+                                </div>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </section>
+<?php endif; ?>
 
 <?php
 $categoryStocks = $pdo->query('SELECT category, COUNT(*) AS total, COALESCE(SUM(current_stock),0) AS stock FROM materials WHERE is_active=1 GROUP BY category')->fetchAll();

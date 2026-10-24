@@ -59,10 +59,7 @@ require_once __DIR__ . '/../../includes/header.php';
 ?>
 <div class="toolbar">
     <form class="filter-form" method="get" action="<?= e(url('superadmin/inventory/index.php')) ?>">
-        <label class="search-box">
-            <span>⌕</span>
-            <input type="search" name="q" value="<?= e($search) ?>" placeholder="Cari nama atau kode bahan" onsearch="this.form.submit()">
-        </label>
+        <?= search_box('q', $search, 'Cari nama atau kode bahan') ?>
         <select name="category" onchange="this.form.submit()">
             <option value="">Semua kategori</option>
             <?php foreach (['kain', 'tinta_printing', 'benang'] as $val): ?>

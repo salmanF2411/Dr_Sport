@@ -46,8 +46,8 @@ require_once __DIR__ . '/../includes/header.php';
     </section>
 
     <div class="row-actions">
-        <a class="button primary" href="<?= e(url('karyawan/use-stock.php', ['id' => $material['id']])) ?>">Gunakan bahan</a>
-        <a class="button secondary" href="<?= e(url('karyawan/usage-history.php', ['material_id' => $material['id']])) ?>">Riwayat penggunaan saya</a>
+        <a class="button primary" href="<?= e(url('karyawan/use-stock.php', ['id' => $material['id']])) ?>">Ajukan pemakaian bahan</a>
+        <a class="button secondary" href="<?= e(url('karyawan/usage-history.php', ['material_id' => $material['id']])) ?>">Riwayat pengajuan saya</a>
     </div>
 </div>
 

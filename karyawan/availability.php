@@ -22,18 +22,14 @@ require_once __DIR__ . '/../includes/header.php';
     <div>
         <span class="live-dot"></span>
         <strong>Saldo terhubung ke database inventory</strong>
-        <p>Cek kebutuhan hanya membaca saldo tanpa mengubah stok. Untuk menggunakan bahan pada pekerjaan, klik Gunakan
-            untuk mencatat pemakaian.</p>
+        <p>Cek kebutuhan hanya membaca saldo tanpa mengubah stok. Untuk menggunakan bahan pada pekerjaan, klik Ajukan untuk mengirim permintaan ke Admin.</p>
     </div>
     <small>Terakhir dimuat <?= e(date('H:i')) ?></small>
 </div>
 
 <div class="toolbar">
     <form method="get" action="<?= e(url('karyawan/availability.php')) ?>" class="filter-form">
-        <label class="search-box">
-            <span>⌕</span>
-            <input type="search" name="q" value="<?= e($search) ?>" placeholder="Cari nama atau kode bahan" onsearch="this.form.submit()">
-        </label>
+        <?= search_box('q', $search, 'Cari nama atau kode bahan') ?>
         <select name="category" onchange="this.form.submit()">
             <option value="">Semua kategori</option>
             <?php foreach (['kain', 'tinta_printing', 'benang'] as $val): ?>
@@ -98,7 +94,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </td>
                         <td>
                             <a class="button small primary"
-                                href="<?= e(url('karyawan/use-stock.php', ['id' => $material['id']])) ?>">Gunakan</a>
+                                href="<?= e(url('karyawan/use-stock.php', ['id' => $material['id']])) ?>">Ajukan</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

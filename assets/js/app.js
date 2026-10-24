@@ -158,8 +158,6 @@
         }
 
         document.querySelectorAll('.filter-form').forEach(function (form) {
-            var debounceTimer = null;
-
             // Auto-submit saat select dropdown diklik atau diubah
             form.querySelectorAll('select').forEach(function (select) {
                 select.addEventListener('change', function () {
@@ -194,21 +192,40 @@
                 });
             });
 
-            // Auto-submit saat search box diketik (debounce 350ms) atau di-clear
+            // Submit pencarian hanya saat tombol Enter ditekan, icon search diklik, atau saat input di-clear (tombol x)
             form.querySelectorAll('input[type="search"], input[name="q"]').forEach(function (searchInput) {
-                searchInput.addEventListener('input', function () {
-                    clearTimeout(debounceTimer);
-                    debounceTimer = setTimeout(function () {
-                        submitFilter(form);
-                    }, 350);
-                });
-                searchInput.addEventListener('search', function () {
-                    submitFilter(form);
-                });
+                // Submit saat Enter ditekan
                 searchInput.addEventListener('keydown', function (e) {
                     if (e.key === 'Enter') {
                         e.preventDefault();
                         submitFilter(form);
+                    }
+                });
+
+                // Submit saat input search di-reset/dikosongkan lewat tombol clear (x)
+                searchInput.addEventListener('search', function () {
+                    if (!searchInput.value) {
+                        submitFilter(form);
+                    }
+                });
+            });
+
+            // Submit saat tombol ikon search (.search-btn) diklik
+            form.querySelectorAll('.search-btn').forEach(function (searchBtn) {
+                searchBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    submitFilter(form);
+                });
+            });
+
+            // Fokus ke input pencarian saat mengklik area di dalam .search-box
+            form.querySelectorAll('.search-box').forEach(function (searchBox) {
+                searchBox.addEventListener('click', function (e) {
+                    if (!e.target.closest('.search-btn')) {
+                        var searchInp = searchBox.querySelector('input[type="search"], input[name="q"]');
+                        if (searchInp && document.activeElement !== searchInp) {
+                            searchInp.focus();
+                        }
                     }
                 });
             });

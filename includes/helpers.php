@@ -89,6 +89,14 @@ function resolve_route(string $target, ?string $role = null): string
             'karyawan' => 'karyawan/history-detail.php',
         ],
 
+        // Pengajuan Bahan (Material Requests)
+        'requests' => [
+            'super_admin' => 'admin/requests/index.php',
+            'admin' => 'admin/requests/index.php',
+            'karyawan' => 'karyawan/usage-history.php',
+        ],
+        'request-stock' => 'karyawan/use-stock.php',
+
         // Karyawan spesifik
         'availability' => 'karyawan/availability.php',
         'use-stock' => 'karyawan/use-stock.php',
@@ -183,16 +191,41 @@ function category_label(string $category): string
  */
 function status_class(string $status): string
 {
-    if (in_array($status, ['Selesai', 'active', 'in', 'Tersedia'], true)) {
+    if (in_array($status, ['Selesai', 'active', 'in', 'Tersedia', 'approved', 'Disetujui'], true)) {
         return 'success';
     }
-    if (in_array($status, ['Dibatalkan', 'inactive', 'out', 'Habis'], true)) {
+    if (in_array($status, ['Dibatalkan', 'inactive', 'out', 'Habis', 'rejected', 'Ditolak'], true)) {
         return 'danger';
     }
-    if (in_array($status, ['Menipis', 'Desain', 'Printing', 'Penjahitan', 'Finishing / QC'], true)) {
+    if (in_array($status, ['Menipis', 'Desain', 'Printing', 'Penjahitan', 'Finishing / QC', 'pending', 'Menunggu Persetujuan', 'Menunggu Konfirmasi'], true)) {
         return 'warning';
     }
     return 'info';
+}
+
+/**
+ * Label status pengajuan bahan.
+ */
+function request_status_label(string $status): string
+{
+    $labels = [
+        'pending' => 'Menunggu Konfirmasi',
+        'approved' => 'Disetujui',
+        'rejected' => 'Ditolak',
+    ];
+    return $labels[$status] ?? $status;
+}
+
+/**
+ * Menghitung jumlah pengajuan bahan yang masih menunggu konfirmasi.
+ */
+function count_pending_requests(): int
+{
+    try {
+        return (int) db()->query("SELECT COUNT(*) FROM material_requests WHERE status='pending'")->fetchColumn();
+    } catch (Throwable $e) {
+        return 0;
+    }
 }
 
 /**
@@ -201,6 +234,22 @@ function status_class(string $status): string
 function status_badge(string $status): string
 {
     return '<span class="badge badge-' . e(status_class($status)) . '">' . e($status) . '</span>';
+}
+
+/**
+ * Render input pencarian dengan tombol SVG search icon dan dukungan submit via Enter atau klik ikon.
+ */
+function search_box(string $name = 'q', string $value = '', string $placeholder = 'Cari...', string $extraAttrs = ''): string
+{
+    return '<div class="search-box">' .
+        '<button type="submit" class="search-btn" aria-label="Cari" title="Cari (Enter)">' .
+        '<svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' .
+        '<circle cx="8.5" cy="8.5" r="5.5"></circle>' .
+        '<line x1="13" y1="13" x2="18" y2="18"></line>' .
+        '</svg>' .
+        '</button>' .
+        '<input type="search" name="' . e($name) . '" value="' . e($value) . '" placeholder="' . e($placeholder) . '" autocomplete="off"' . ($extraAttrs ? ' ' . $extraAttrs : '') . '>' .
+        '</div>';
 }
 
 /**

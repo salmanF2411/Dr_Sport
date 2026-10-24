@@ -10,53 +10,57 @@ $materialId = (int) ($_GET['id'] ?? 0);
 
 $materials = db()->query('SELECT id, material_code, name, current_stock, unit FROM materials WHERE is_active=1 ORDER BY name')->fetchAll();
 
-$pageTitle = 'Catat Pemakaian Bahan';
+$pageTitle = 'Pengajuan Pemakaian Bahan';
 $activePage = 'karyawan_use_stock';
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <form method="post" action="<?= e(base_url('actions/inventory-actions.php')) ?>" class="form-layout">
     <?= csrf_field() ?>
-    <input type="hidden" name="action" value="employee_stock_use">
+    <input type="hidden" name="action" value="employee_request_stock">
+
+    <div class="alert alert-info" style="margin-bottom: 20px;">
+        <strong>Alur Pengajuan Bahan:</strong> Karyawan mengajukan kebutuhan bahan (kain, benang, tinta, dll) dan harus menunggu persetujuan dari Admin. Saldo stok <strong>tidak akan langsung berkurang</strong> sampai Admin mengonfirmasi.
+    </div>
 
     <section class="panel form-panel">
         <div class="panel-heading">
             <div>
-                <h2>Catat pemakaian bahan</h2>
-                <p>Saldo akan diperiksa kembali saat disimpan. Pemakaian akan langsung mengurangi stok sistem.</p>
+                <h2>Formulir Pengajuan Bahan</h2>
+                <p>Isi rincian bahan yang dibutuhkan untuk pengerjaan pesanan atau keperluan workshop.</p>
             </div>
         </div>
         <div class="form-grid">
             <label class="field field-wide">
-                <span>Bahan <b>*</b></span>
+                <span>Bahan yang dibutuhkan <b>*</b></span>
                 <select name="material_id" required>
-                    <option value="">Pilih bahan yang digunakan</option>
+                    <option value="">Pilih bahan yang ingin diajukan</option>
                     <?php foreach ($materials as $mat): ?>
                         <option value="<?= e($mat['id']) ?>"<?= ($materialId === (int) $mat['id'] ? ' selected' : '') ?>>
-                            <?= e($mat['material_code'] . ' · ' . $mat['name'] . ' — tersedia ' . format_stock($mat['current_stock']) . ' ' . $mat['unit']) ?>
+                            <?= e($mat['material_code'] . ' · ' . $mat['name'] . ' — Saldo tersedia: ' . format_stock($mat['current_stock']) . ' ' . $mat['unit']) ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
             </label>
             <label class="field">
-                <span>Jumlah dipakai <b>*</b></span>
-                <input type="number" name="quantity" min="0.001" max="99999999999.999" step="0.001" required placeholder="0">
-                <small>Masukkan jumlah dalam satuan bahan yang dipilih.</small>
+                <span>Jumlah yang diajukan <b>*</b></span>
+                <input type="number" name="quantity" min="0.001" max="99999999999.999" step="0.001" required placeholder="Contoh: 5">
+                <small>Masukkan jumlah dalam satuan bahan yang dipilih (misal: meter, pcs, kg).</small>
             </label>
             <label class="field">
-                <span>Keperluan / Alasan <b>*</b></span>
-                <input name="reason" maxlength="180" required placeholder="Contoh: Produksi jersey order A / uji sampel warna">
+                <span>Keperluan / Alasan Pengajuan <b>*</b></span>
+                <input name="reason" maxlength="180" required placeholder="Contoh: Produksi jersey order custom 20 pcs">
             </label>
             <label class="field field-wide">
                 <span>Catatan tambahan</span>
-                <textarea name="notes" rows="3" maxlength="1000" placeholder="Opsional (catatan pengerjaan atau kondisi bahan)"></textarea>
+                <textarea name="notes" rows="3" maxlength="1000" placeholder="Opsional (catatan pengerjaan, spesifikasi bahan, atau nomor pesanan terkait)"></textarea>
             </label>
         </div>
     </section>
 
     <div class="form-actions">
         <a class="button secondary" href="<?= e(url('karyawan/availability.php')) ?>">Batal</a>
-        <button class="button primary">Simpan pemakaian</button>
+        <button class="button primary">Kirim Pengajuan ke Admin ↗</button>
     </div>
 </form>
 

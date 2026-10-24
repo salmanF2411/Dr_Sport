@@ -12,6 +12,7 @@ $pdo = db();
 $activeUsers = (int) $pdo->query("SELECT COUNT(*) FROM users WHERE status='active'")->fetchColumn();
 $staffUsers = (int) $pdo->query("SELECT COUNT(*) FROM users WHERE role IN ('admin','karyawan')")->fetchColumn();
 $orderCount = (int) $pdo->query("SELECT COUNT(*) FROM orders WHERE status NOT IN ('Selesai','Dibatalkan')")->fetchColumn();
+$pendingRequests = (int) $pdo->query("SELECT COUNT(*) FROM material_requests WHERE status='pending'")->fetchColumn();
 $lowCount = (int) $pdo->query('SELECT COUNT(*) FROM materials WHERE is_active = 1 AND current_stock <= minimum_stock')->fetchColumn();
 
 require_once __DIR__ . '/../includes/header.php';
@@ -19,11 +20,23 @@ require_once __DIR__ . '/../includes/header.php';
 <div class="stat-grid">
     <?php
     stat_card('Akun aktif', (string) $activeUsers, 'Pengguna dapat masuk');
-    stat_card('Admin & karyawan', (string) $staffUsers, 'Akun operasional');
+    stat_card('Pengajuan bahan', (string) $pendingRequests, 'Menunggu konfirmasi', $pendingRequests > 0 ? 'warning' : '');
     stat_card('Pesanan berjalan', (string) $orderCount, 'Belum selesai');
     stat_card('Stok perlu perhatian', (string) $lowCount, 'Bahan menyentuh minimum', 'warning');
     ?>
 </div>
+
+<?php if ($pendingRequests > 0): ?>
+    <section class="panel" style="margin-bottom: 17px; border-left: 4px solid var(--warning);">
+        <div class="panel-heading">
+            <div>
+                <h2 style="color: var(--warning);">✉ Pengajuan Bahan Menunggu Konfirmasi (<?= $pendingRequests ?>)</h2>
+                <p>Terdapat pengajuan bahan baku dari karyawan yang belum disetujui.</p>
+            </div>
+            <a class="text-link" href="<?= e(url('admin/requests/index.php', ['status' => 'pending'])) ?>">Buka Pengajuan Bahan →</a>
+        </div>
+    </section>
+<?php endif; ?>
 
 <?php
 $counts = $pdo->query('SELECT status, COUNT(*) AS total FROM orders GROUP BY status')->fetchAll(PDO::FETCH_KEY_PAIR);

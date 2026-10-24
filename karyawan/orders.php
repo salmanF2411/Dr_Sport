@@ -42,10 +42,7 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 <div class="toolbar">
     <form class="filter-form" method="get" action="<?= e(url('karyawan/orders.php')) ?>">
-        <label class="search-box">
-            <span>⌕</span>
-            <input type="search" name="q" value="<?= e($search) ?>" placeholder="Cari kode pesanan / deskripsi" onsearch="this.form.submit()">
-        </label>
+        <?= search_box('q', $search, 'Cari kode pesanan / deskripsi') ?>
         <select name="status" onchange="this.form.submit()">
             <option value="">Semua status aktif</option>
             <?php foreach ($statuses as $val): ?>

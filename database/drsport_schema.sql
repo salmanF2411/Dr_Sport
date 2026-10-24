@@ -121,6 +121,31 @@ CREATE TABLE IF NOT EXISTS inventory_transactions (
   INDEX idx_transactions_order (order_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS material_requests (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  request_code VARCHAR(40) NOT NULL UNIQUE,
+  material_id BIGINT UNSIGNED NOT NULL,
+  user_id BIGINT UNSIGNED NOT NULL,
+  quantity DECIMAL(14,3) NOT NULL,
+  reason VARCHAR(180) NOT NULL,
+  notes TEXT NULL,
+  status ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
+  admin_notes VARCHAR(255) NULL,
+  approved_by BIGINT UNSIGNED NULL,
+  approved_at DATETIME NULL,
+  inventory_transaction_id BIGINT UNSIGNED NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_requests_material FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE RESTRICT,
+  CONSTRAINT fk_requests_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  CONSTRAINT fk_requests_admin FOREIGN KEY (approved_by) REFERENCES users(id) ON DELETE SET NULL,
+  CONSTRAINT fk_requests_transaction FOREIGN KEY (inventory_transaction_id) REFERENCES inventory_transactions(id) ON DELETE SET NULL,
+  CONSTRAINT chk_request_quantity CHECK (quantity > 0),
+  INDEX idx_requests_status_created (status, created_at),
+  INDEX idx_requests_user (user_id, created_at),
+  INDEX idx_requests_material (material_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS activity_logs (
   id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT UNSIGNED NULL,
@@ -134,3 +159,4 @@ CREATE TABLE IF NOT EXISTS activity_logs (
   INDEX idx_activity_created (created_at),
   INDEX idx_activity_user (user_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+

@@ -17,10 +17,13 @@ $roleLabels = [
 
 $active = $activePage ?? '';
 
+$pendingCount = in_array($role, ['super_admin', 'admin'], true) ? count_pending_requests() : 0;
+
 // Definisi menu navigasi per peran
 $navItems = [
     // Super Admin
     ['id' => 'superadmin_dashboard', 'label' => 'Dashboard', 'icon' => '◫', 'url' => url('superadmin/dashboard.php'), 'roles' => ['super_admin']],
+    ['id' => 'superadmin_requests', 'label' => 'Pengajuan Bahan', 'icon' => '✉', 'url' => url('admin/requests/index.php'), 'roles' => ['super_admin'], 'badge' => $pendingCount],
     ['id' => 'superadmin_orders', 'label' => 'Pesanan', 'icon' => '▤', 'url' => url('superadmin/orders/index.php'), 'roles' => ['super_admin']],
     ['id' => 'superadmin_inventory', 'label' => 'Inventory', 'icon' => '▦', 'url' => url('superadmin/inventory/index.php'), 'roles' => ['super_admin']],
     ['id' => 'superadmin_storage', 'label' => 'Rak Gudang', 'icon' => '◧', 'url' => url('admin/inventory/storage-locations.php'), 'roles' => ['super_admin']],
@@ -31,6 +34,7 @@ $navItems = [
 
     // Admin
     ['id' => 'admin_dashboard', 'label' => 'Dashboard', 'icon' => '◫', 'url' => url('admin/dashboard.php'), 'roles' => ['admin']],
+    ['id' => 'admin_requests', 'label' => 'Pengajuan Bahan', 'icon' => '✉', 'url' => url('admin/requests/index.php'), 'roles' => ['admin'], 'badge' => $pendingCount],
     ['id' => 'admin_orders', 'label' => 'Pesanan', 'icon' => '▤', 'url' => url('admin/orders/index.php'), 'roles' => ['admin']],
     ['id' => 'admin_inventory', 'label' => 'Inventory', 'icon' => '▦', 'url' => url('admin/inventory/index.php'), 'roles' => ['admin']],
     ['id' => 'admin_storage', 'label' => 'Rak Gudang', 'icon' => '◧', 'url' => url('admin/inventory/storage-locations.php'), 'roles' => ['admin']],
@@ -40,8 +44,8 @@ $navItems = [
     // Karyawan
     ['id' => 'karyawan_dashboard', 'label' => 'Dashboard', 'icon' => '◫', 'url' => url('karyawan/dashboard.php'), 'roles' => ['karyawan']],
     ['id' => 'karyawan_availability', 'label' => 'Cek Ketersediaan', 'icon' => '⌕', 'url' => url('karyawan/availability.php'), 'roles' => ['karyawan']],
-    ['id' => 'karyawan_use_stock', 'label' => 'Gunakan Stok', 'icon' => '−', 'url' => url('karyawan/use-stock.php'), 'roles' => ['karyawan']],
-    ['id' => 'karyawan_usage_history', 'label' => 'Riwayat Penggunaan', 'icon' => '↕', 'url' => url('karyawan/usage-history.php'), 'roles' => ['karyawan']],
+    ['id' => 'karyawan_use_stock', 'label' => 'Ajukan Bahan', 'icon' => '＋', 'url' => url('karyawan/use-stock.php'), 'roles' => ['karyawan']],
+    ['id' => 'karyawan_usage_history', 'label' => 'Riwayat Pengajuan', 'icon' => '↕', 'url' => url('karyawan/usage-history.php'), 'roles' => ['karyawan']],
     ['id' => 'karyawan_orders', 'label' => 'Status Pesanan', 'icon' => '▤', 'url' => url('karyawan/orders.php'), 'roles' => ['karyawan']],
 ];
 
@@ -62,7 +66,10 @@ $dashboardUrl = url('dashboard');
                 <?php $isActive = ($active === $item['id']) ? ' active' : ''; ?>
                 <a class="nav-link<?= $isActive ?>" href="<?= e($item['url']) ?>">
                     <span class="nav-icon"><?= e($item['icon']) ?></span>
-                    <?= e($item['label']) ?>
+                    <span><?= e($item['label']) ?></span>
+                    <?php if (!empty($item['badge'])): ?>
+                        <span class="badge badge-warning" style="margin-left:auto; font-size:10px; padding:2px 7px; border-radius:10px;"><?= (int) $item['badge'] ?></span>
+                    <?php endif; ?>
                 </a>
             <?php endif; ?>
         <?php endforeach; ?>

@@ -214,7 +214,7 @@ try {
         redirect('admin/inventory/index.php');
     }
 
-    if ($action === 'employee_stock_use') {
+    if ($action === 'employee_stock_use' || $action === 'employee_request_stock') {
         require_role(['karyawan']);
         $materialId = (int) ($_POST['material_id'] ?? 0);
         $quantity = trim((string) ($_POST['quantity'] ?? ''));
@@ -222,14 +222,81 @@ try {
         $notes = trim((string) ($_POST['notes'] ?? ''));
 
         if (!valid_stock_amount($quantity, false) || $reason === '' || strlen($reason) > 180 || strlen($notes) > 1000) {
-            throw new RuntimeException('Jumlah pemakaian dan keperluan wajib diisi dengan benar.');
+            throw new RuntimeException('Jumlah pengajuan dan keperluan wajib diisi dengan benar.');
+        }
+
+        $pdo = db();
+        $stmt = $pdo->prepare('SELECT id, material_code, name, current_stock, unit, is_active FROM materials WHERE id = ?');
+        $stmt->execute([$materialId]);
+        $mat = $stmt->fetch();
+        if (!$mat || !(int) $mat['is_active']) {
+            throw new RuntimeException('Bahan tidak ditemukan atau sudah dinonaktifkan.');
+        }
+
+        // Generate kode pengajuan unik
+        $requestCode = 'REQ-' . date('ymd') . '-' . strtoupper(bin2hex(random_bytes(3)));
+
+        $pdo->prepare('INSERT INTO material_requests (request_code, material_id, user_id, quantity, reason, notes, status) VALUES (?, ?, ?, ?, ?, ?, "pending")')->execute([
+            $requestCode,
+            $materialId,
+            $actorId,
+            number_format((float) $quantity, 3, '.', ''),
+            $reason,
+            $notes ?: null
+        ]);
+        $requestId = (int) $pdo->lastInsertId();
+
+        log_activity($actorId, 'material_request_created', 'Mengajukan pemakaian ' . $mat['name'] . ' sebanyak ' . format_stock($quantity) . ' ' . $mat['unit'] . ' (' . $requestCode . ').', 'material_request', $requestId);
+
+        flash('success', 'Pengajuan pemakaian bahan (' . $requestCode . ') berhasil dikirim ke Admin. Stok akan berkurang setelah disetujui.');
+        redirect('karyawan/usage-history.php');
+    }
+
+    if ($action === 'approve_material_request') {
+        require_role(['super_admin', 'admin']);
+        $requestId = (int) ($_POST['request_id'] ?? 0);
+        $adminNotes = trim((string) ($_POST['admin_notes'] ?? ''));
+
+        if ($requestId <= 0) {
+            throw new RuntimeException('ID pengajuan tidak valid.');
         }
 
         $pdo = db();
         $pdo->beginTransaction();
         try {
-            $transactionId = record_inventory($pdo, $materialId, 'out', (float) $quantity, null, $reason, $notes, $actorId);
-            log_activity($actorId, 'employee_stock_use', $reason . ' (' . $quantity . ').', 'inventory_transaction', $transactionId);
+            $stmt = $pdo->prepare('SELECT r.*, m.material_code, m.name AS material_name, m.unit, m.current_stock, u.name AS requester_name FROM material_requests r JOIN materials m ON m.id = r.material_id JOIN users u ON u.id = r.user_id WHERE r.id = ? FOR UPDATE');
+            $stmt->execute([$requestId]);
+            $req = $stmt->fetch();
+
+            if (!$req) {
+                throw new RuntimeException('Pengajuan tidak ditemukan.');
+            }
+            if ($req['status'] !== 'pending') {
+                throw new RuntimeException('Pengajuan ini sudah pernah diproses sebelumnya (' . request_status_label($req['status']) . ').');
+            }
+
+            $reqQty = (float) $req['quantity'];
+            $currentStock = (float) $req['current_stock'];
+
+            if ($reqQty > $currentStock) {
+                throw new RuntimeException('Stok bahan tidak mencukupi untuk menyetujui pengajuan ini. Saldo tersedia saat ini: ' . format_stock($currentStock) . ' ' . $req['unit'] . ', dibutuhkan: ' . format_stock($reqQty) . ' ' . $req['unit'] . '.');
+            }
+
+            // Catat ke inventory_transactions dan kurangi saldo stok
+            $transactionReason = 'Pengajuan disetujui: ' . $req['reason'];
+            $transactionNotes = 'Pemohon: ' . $req['requester_name'] . ' (' . $req['request_code'] . ')' . ($adminNotes !== '' ? ' | Catatan Admin: ' . $adminNotes : '') . ($req['notes'] ? ' | Catatan Pemohon: ' . $req['notes'] : '');
+            $transactionId = record_inventory($pdo, (int) $req['material_id'], 'out', $reqQty, null, $transactionReason, $transactionNotes, $actorId);
+
+            // Perbarui status pengajuan
+            $pdo->prepare('UPDATE material_requests SET status = "approved", approved_by = ?, approved_at = NOW(), admin_notes = ?, inventory_transaction_id = ? WHERE id = ?')->execute([
+                $actorId,
+                $adminNotes ?: null,
+                $transactionId,
+                $requestId
+            ]);
+
+            log_activity($actorId, 'material_request_approved', 'Menyetujui pengajuan ' . $req['request_code'] . ' (' . $req['material_name'] . ' ' . format_stock($reqQty) . ' ' . $req['unit'] . ').', 'material_request', $requestId);
+
             $pdo->commit();
         } catch (Throwable $error) {
             if ($pdo->inTransaction()) {
@@ -238,8 +305,61 @@ try {
             throw $error;
         }
 
-        flash('success', 'Pemakaian berhasil dicatat dan saldo stok telah diperbarui.');
-        redirect('karyawan/usage-history.php');
+        flash('success', 'Pengajuan ' . $req['request_code'] . ' berhasil disetujui. Stok bahan telah berkurang sebesar ' . format_stock($req['quantity']) . ' ' . $req['unit'] . '.');
+        $redirectUrl = (string) ($_POST['redirect_to'] ?? '');
+        if ($redirectUrl !== '') {
+            header('Location: ' . $redirectUrl);
+            exit;
+        }
+        redirect('admin/requests/index.php');
+    }
+
+    if ($action === 'reject_material_request') {
+        require_role(['super_admin', 'admin']);
+        $requestId = (int) ($_POST['request_id'] ?? 0);
+        $adminNotes = trim((string) ($_POST['admin_notes'] ?? ''));
+
+        if ($requestId <= 0) {
+            throw new RuntimeException('ID pengajuan tidak valid.');
+        }
+
+        $pdo = db();
+        $pdo->beginTransaction();
+        try {
+            $stmt = $pdo->prepare('SELECT r.*, m.name AS material_name, m.unit FROM material_requests r JOIN materials m ON m.id = r.material_id WHERE r.id = ? FOR UPDATE');
+            $stmt->execute([$requestId]);
+            $req = $stmt->fetch();
+
+            if (!$req) {
+                throw new RuntimeException('Pengajuan tidak ditemukan.');
+            }
+            if ($req['status'] !== 'pending') {
+                throw new RuntimeException('Pengajuan ini sudah pernah diproses sebelumnya (' . request_status_label($req['status']) . ').');
+            }
+
+            $pdo->prepare('UPDATE material_requests SET status = "rejected", approved_by = ?, approved_at = NOW(), admin_notes = ? WHERE id = ?')->execute([
+                $actorId,
+                $adminNotes ?: 'Pengajuan ditolak oleh Admin',
+                $requestId
+            ]);
+
+            log_activity($actorId, 'material_request_rejected', 'Menolak pengajuan ' . $req['request_code'] . ' (' . $req['material_name'] . ').' . ($adminNotes ? ' Alasan: ' . $adminNotes : ''), 'material_request', $requestId);
+
+            $pdo->commit();
+        } catch (Throwable $error) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            throw $error;
+        }
+
+        flash('warning', 'Pengajuan ' . $req['request_code'] . ' telah ditolak.');
+        $redirectUrl = (string) ($_POST['redirect_to'] ?? '');
+        if ($redirectUrl !== '') {
+            header('Location: ' . $redirectUrl);
+            exit;
+        }
+        redirect('admin/requests/index.php');
     }
 
     throw new RuntimeException('Aksi inventory tidak dikenal.');

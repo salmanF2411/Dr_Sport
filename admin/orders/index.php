@@ -61,10 +61,7 @@ require_once __DIR__ . '/../../includes/header.php';
 ?>
 <div class="toolbar">
     <form class="filter-form" method="get" action="<?= e(url('admin/orders/index.php')) ?>">
-        <label class="search-box">
-            <span>⌕</span>
-            <input type="search" name="q" value="<?= e($search) ?>" placeholder="Cari kode, pelanggan, kontak" onsearch="this.form.submit()">
-        </label>
+        <?= search_box('q', $search, 'Cari kode, pelanggan, kontak') ?>
         <label class="field-inline">
             <span>Dari</span>
             <input type="date" name="start" value="<?= e($start) ?>" onchange="if(!this.value||this.value.length===10)this.form.submit()">

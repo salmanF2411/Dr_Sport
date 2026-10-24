@@ -71,10 +71,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <span>Sampai</span>
             <input type="date" name="end" value="<?= e($end) ?>" onchange="if(!this.value||this.value.length===10)this.form.submit()">
         </label>
-        <label class="search-box">
-            <span>⌕</span>
-            <input type="search" name="q" value="<?= e($orderSearch) ?>" placeholder="Kode pesanan / pelanggan" onsearch="this.form.submit()">
-        </label>
+        <?= search_box('q', $orderSearch, 'Kode pesanan / pelanggan') ?>
         <select name="status" onchange="this.form.submit()">
             <option value="">Semua status</option>
             <?php foreach ($allowedStatuses as $val): ?>
