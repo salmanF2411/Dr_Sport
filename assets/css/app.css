@@ -91,6 +91,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .panel-heading h2 { margin: 0; font: 700 14px Manrope, "Segoe UI", sans-serif; }
 .panel-heading p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
 .text-link { flex: 0 0 auto; color: var(--primary); font-size: 11px; font-weight: 600; }
+.panel-heading-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.excel-btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border: 1px solid #bbf7d0; border-radius: 7px; background: #f0fdf4; color: #166534; font-size: 11px; font-weight: 700; text-decoration: none; cursor: pointer; white-space: nowrap; transition: all 0.18s ease; box-shadow: 0 1px 2px rgba(22, 101, 52, 0.05); }
+.excel-btn:hover { background: #16a34a; border-color: #16a34a; color: #ffffff; box-shadow: 0 3px 8px rgba(22, 163, 74, 0.25); transform: translateY(-1px); }
+.excel-btn svg { width: 14px; height: 14px; flex-shrink: 0; transition: transform 0.15s ease; }
+.excel-btn:hover svg { transform: scale(1.1); }
 .table-wrap { width: 100%; overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
 th { height: 41px; padding: 0 15px; color: #778296; background: #fbfcfd; font-size: 10px; font-weight: 700; letter-spacing: .25px; }

@@ -1,3 +1,4 @@
 /config/database.local.php
 /uploads/materials/*
 !/uploads/materials/.htaccess
+/vendor/

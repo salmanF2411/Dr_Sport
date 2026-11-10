@@ -538,3 +538,21 @@ function render_error(int $code, string $message): void
     $homeUrl = base_url();
     echo '<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . $code . ' · DR.SPORT</title><link rel="stylesheet" href="' . e($cssUrl) . '"></head><body><main class="error-page"><img class="brand-logo error-logo" src="' . e($logoUrl) . '" alt="DR.SPORT"><p class="eyebrow">DR.SPORT · INVENTORY CONSOLE</p><h1>' . $code . '</h1><p>' . e($message) . '</p><a class="button primary" href="' . e($homeUrl) . '">Kembali ke aplikasi</a></main></body></html>';
 }
+
+/**
+ * Render tombol cetak / unduh laporan Excel (.xlsx).
+ */
+function excel_button(string $url, string $label = 'Cetak ke Excel'): string
+{
+    return '<a class="excel-btn no-print" href="' . e($url) . '" title="' . e($label) . '">' .
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' .
+        '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>' .
+        '<polyline points="14 2 14 8 20 8"></polyline>' .
+        '<line x1="8" y1="13" x2="16" y2="13"></line>' .
+        '<line x1="8" y1="17" x2="16" y2="17"></line>' .
+        '<polyline points="10 9 9 9 8 9"></polyline>' .
+        '</svg>' .
+        '<span>' . e($label) . '</span>' .
+        '</a>';
+}
+

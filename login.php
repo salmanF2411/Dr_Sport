@@ -16,6 +16,7 @@ $actionUrl = base_url('actions/user-actions.php');
 ?>
 <!doctype html>
 <html lang="id">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,6 +24,7 @@ $actionUrl = base_url('actions/user-actions.php');
     <title>Masuk · DR.SPORT</title>
     <link rel="stylesheet" href="<?= e($cssUrl) ?>">
 </head>
+
 <body class="login-page">
     <div class="login-decoration"></div>
     <main class="login-wrap">
@@ -39,7 +41,8 @@ $actionUrl = base_url('actions/user-actions.php');
             <p class="muted">Kelola pesanan dan inventory dengan lebih terarah.</p>
 
             <?php if (!empty($_SESSION['flash'])): ?>
-                <?php $flash = $_SESSION['flash']; unset($_SESSION['flash']); ?>
+                <?php $flash = $_SESSION['flash'];
+                unset($_SESSION['flash']); ?>
                 <div class="alert alert-error">
                     <?= e($flash['message']) ?>
                 </div>
@@ -55,8 +58,10 @@ $actionUrl = base_url('actions/user-actions.php');
                 <label class="field">
                     <span>Password</span>
                     <div class="password-wrap">
-                        <input id="login-password" type="password" name="password" required autocomplete="current-password" placeholder="Masukkan password">
-                        <button type="button" class="password-toggle" data-toggle-password="login-password" aria-label="Tampilkan password">Lihat</button>
+                        <input id="login-password" type="password" name="password" required
+                            autocomplete="current-password" placeholder="Masukkan password">
+                        <button type="button" class="password-toggle" data-toggle-password="login-password"
+                            aria-label="Tampilkan password">Lihat</button>
                     </div>
                 </label>
                 <button class="button primary login-submit">Masuk ke dashboard <span>→</span></button>
@@ -71,4 +76,5 @@ $actionUrl = base_url('actions/user-actions.php');
     </main>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= filemtime(__DIR__ . '/assets/js/app.js') ?>"></script>
 </body>
+
 </html>

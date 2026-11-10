@@ -59,6 +59,20 @@ $transactionCount = db()->prepare('SELECT COUNT(*) FROM inventory_transactions W
 $transactionCount->execute([$start, $end]);
 $totalMutations = (int) $transactionCount->fetchColumn();
 
+$exportOrdersUrl = url('actions/export-reports.php', [
+    'type' => 'orders',
+    'start' => $start,
+    'end' => $end,
+    'status' => $orderStatus,
+    'q' => $orderSearch,
+]);
+
+$exportInventoryUrl = url('actions/export-reports.php', [
+    'type' => 'inventory',
+    'start' => $start,
+    'end' => $end,
+]);
+
 require_once __DIR__ . '/../../includes/header.php';
 ?>
 <div class="toolbar">
@@ -79,7 +93,6 @@ require_once __DIR__ . '/../../includes/header.php';
             <?php endforeach; ?>
         </select>
     </form>
-    <button class="button primary no-print" onclick="window.print()">Cetak laporan</button>
 </div>
 
 <div class="report-period">
@@ -101,6 +114,9 @@ require_once __DIR__ . '/../../includes/header.php';
         <div>
             <h2>Laporan pesanan</h2>
             <p>Data berdasarkan tanggal pesanan · maksimal 500 hasil</p>
+        </div>
+        <div class="panel-heading-actions">
+            <?= excel_button($exportOrdersUrl, 'Cetak ke Excel') ?>
         </div>
     </div>
     <div class="table-wrap">
@@ -142,6 +158,9 @@ require_once __DIR__ . '/../../includes/header.php';
             <h2>Laporan inventory</h2>
             <p>Saldo periode dihitung dari ledger mutasi. Saldo saat ini berasal dari saldo terkini master inventory.
             </p>
+        </div>
+        <div class="panel-heading-actions">
+            <?= excel_button($exportInventoryUrl, 'Cetak ke Excel') ?>
         </div>
     </div>
     <div class="table-wrap">
