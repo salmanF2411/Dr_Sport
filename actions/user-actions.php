@@ -14,17 +14,17 @@ try {
         $now = time();
         $attempts = $_SESSION['login_attempts'] ?? [];
         $attempts = array_values(array_filter($attempts, function ($time) use ($now) {
-            return $time > $now - 900;
+            return $time > $now - 180;
         }));
         $remoteAddress = substr((string) ($_SERVER['REMOTE_ADDR'] ?? ''), 0, 45);
         $ipAttempts = 0;
         if ($remoteAddress !== '') {
-            $rateLimit = db()->prepare("SELECT COUNT(*) FROM activity_logs WHERE action = 'login_failed' AND ip_address = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 15 MINUTE)");
+            $rateLimit = db()->prepare("SELECT COUNT(*) FROM activity_logs WHERE action = 'login_failed' AND ip_address = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 3 MINUTE)");
             $rateLimit->execute([$remoteAddress]);
             $ipAttempts = (int) $rateLimit->fetchColumn();
         }
         if (count($attempts) >= 5 || $ipAttempts >= 20) {
-            flash('error', 'Terlalu banyak percobaan. Silakan coba kembali dalam 15 menit.');
+            flash('error', 'Terlalu banyak percobaan. Silakan coba kembali dalam 3 menit.');
             redirect('login.php');
         }
         $identifier = trim((string) ($_POST['username'] ?? ''));
